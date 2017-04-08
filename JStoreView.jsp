@@ -9,7 +9,7 @@
 </head>
 <body>
 <h1>
-    <center> Test NoteBean.java</center>
+    <center>Test NoteBean</center>
 </h1>
 <hr/>
 <h3>The Code:</h3>

@@ -22,8 +22,7 @@ public class SessionServlet extends HttpServlet {
     private static final int IP_INDEX = 0;
     private static final int DATE_INDEX = 1;
     private static final int NAME_INDEX = 2;
-
-    private static String noName = "no username given";
+    private static final String NO_NAME = "no username given";
 
     private List<String[]> sessions;
     private DateFormat dateFormat;
@@ -78,7 +77,7 @@ public class SessionServlet extends HttpServlet {
 
             //If the session limit has not been reached...
 
-            String[] new_session = {ip, this.dateFormat.format(new Date()), "need a username"};
+            String[] new_session = {ip, this.dateFormat.format(new Date()), NO_NAME};
             this.sessions.add(new_session);
             forwardTo.accept("startSession.jsp");
             return;
@@ -86,9 +85,10 @@ public class SessionServlet extends HttpServlet {
 
         //If this is not the user's first visit to the site...
 
+
         String username = "";
         String password;
-        if (currentSession[NAME_INDEX].equals(noName)) { //If no name was set for this session...
+        if (currentSession[NAME_INDEX].equals(NO_NAME)) { //If no name was set for this session...
             username = req.getParameter("username");
             password = req.getParameter("password");
             if (username == null || username.trim().length() == 0 || checkPassword(username, password)) { //If the credentials are invalid...
