@@ -10,7 +10,7 @@ import java.sql.Statement;
 
 public class NotesBean implements Serializable {
     private static final int FILENAME_INDEX = 0;
-    private static final int VERSION_ID_INDEX = 0;
+    private static final int VERSION_ID_INDEX = 1;
 
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost:3306/cs4010";
@@ -35,8 +35,6 @@ public class NotesBean implements Serializable {
 
     public void setAll(String fileName, int version) {
         try {
-            System.out.println(fileName);
-            System.out.println(version);
             this.versionId = -2;
             Class.forName(JDBC_DRIVER);
             Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);

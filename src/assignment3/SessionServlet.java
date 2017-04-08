@@ -22,6 +22,7 @@ public class SessionServlet extends HttpServlet {
     private static final int IP_INDEX = 0;
     private static final int DATE_INDEX = 1;
     private static final int NAME_INDEX = 2;
+    private static final int RANDOM_STRING_INDEX = 3;
     private static final String NO_NAME = "no username given";
 
     private List<String[]> sessions;
@@ -57,7 +58,7 @@ public class SessionServlet extends HttpServlet {
         String[] currentSession = new String[3];
         String ip = req.getRemoteAddr();
         for (String[] session : this.sessions) {
-            if (session[0].equals(ip)) {
+            if (session[IP_INDEX].equals(ip)) {
                 isFirstVisit = false;
                 currentSession = session;
                 break;
@@ -77,14 +78,23 @@ public class SessionServlet extends HttpServlet {
 
             //If the session limit has not been reached...
 
-            String[] new_session = {ip, this.dateFormat.format(new Date()), NO_NAME};
-            this.sessions.add(new_session);
+            String[] newSession = {ip, this.dateFormat.format(new Date()), NO_NAME, getRandomString()};
+            this.sessions.add(newSession);
             forwardTo.accept("startSession.jsp");
             return;
         }
 
         //If this is not the user's first visit to the site...
 
+        if (req.getParameter("task").equals("end")) { //If the task is "end"...
+            System.out.println("Ending session.");
+            this.sessions.remove(currentSession);
+            req.getSession().invalidate();
+            forwardTo.accept("startSession.jsp");
+            return;
+        }
+
+        //If the task is not "end"...
 
         String username = "";
         String password;

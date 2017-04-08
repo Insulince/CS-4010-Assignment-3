@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Start assignment_3.Session ${sessionCount}</title>
+    <title>Start Session ${sessionCount}</title>
 </head>
 <body>
 <center>

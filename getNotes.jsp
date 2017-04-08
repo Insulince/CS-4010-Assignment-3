@@ -47,6 +47,12 @@
           ${notes.thisVersion}
       </b></font></pre>
     </div>
+    <hr/>
+    <center><h2>End Session</h2></center>
+    <form>
+        <input type="hidden" name="task" value="end"/>
+        <input type="submit" value="Close Session"/>
+    </form>
 </font>
 </body>
 </html>
