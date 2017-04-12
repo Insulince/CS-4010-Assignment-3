@@ -12,17 +12,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class SessionServlet extends HttpServlet {
-    private static final int IP_INDEX = 0;
+    private static final int IDENTIFIER_INDEX = 0;
     private static final int DATE_INDEX = 1;
     private static final int NAME_INDEX = 2;
-    private static final int RANDOM_STRING_INDEX = 3;
     private static final String NO_NAME = "no username given";
 
     private List<String[]> sessions;
@@ -43,7 +39,7 @@ public class SessionServlet extends HttpServlet {
                     "   <body>" +
                     "       <hr/>" +
                     "       <center>" +
-                    "           <h1>assignment_3.SessionServlet Deployed</h1>" +
+                    "           <h1>SessionServlet Deployed</h1>" +
                     "       </center>" +
                     "       <hr/>" +
                     "   </body>" +
@@ -56,31 +52,63 @@ public class SessionServlet extends HttpServlet {
         Consumer<String> forwardTo = (string) -> forwardTo(string, req, res);
         boolean isFirstVisit = true;
         String[] currentSession = new String[3];
-        String ip = req.getRemoteAddr();
-        for (String[] session : this.sessions) {
-            if (session[IP_INDEX].equals(ip)) {
-                isFirstVisit = false;
-                currentSession = session;
-                break;
+        String usersString = req.getParameter("sessionString");
+
+        System.out.println(usersString);
+        if (usersString != null && !Objects.equals(usersString, "")) {
+            System.out.println("usersString != null; does = " + usersString);
+
+            int counter = 0;
+            for (String[] session : this.sessions) {
+                if (session[IDENTIFIER_INDEX].equals(usersString)) {
+                    System.out.println("Session match!\n---" + session[IDENTIFIER_INDEX] + "\n---" + session[DATE_INDEX] + "\n---" + session[NAME_INDEX]);
+                    isFirstVisit = false;
+                    currentSession = session;
+                    break;
+                }
+
+                counter++;
+
+                if (counter == this.sessions.size()) {
+                    System.out.println("No match for session.");
+                    forwardTo.accept("startSession.jsp");
+                    return;
+                }
             }
         }
 
+        if (req.getParameter("task") == null) {
+            System.out.println("Sending to login");
+
+            forwardTo.accept("startSession.jsp");
+            return;
+        }
+
         if (req.getParameter("task") == null && !isFirstVisit) { //If there is no task...
+            System.out.println("Task = null && !isFirstVisit");
             this.sessions.remove(currentSession);
             isFirstVisit = true;
         }
         req.setAttribute("sessionCount", this.sessions.size());
         if (isFirstVisit) { //If this is the user's first visit to the site...
+            System.out.println("Is first visit");
+
             if (this.sessions.size() == 10) { //If the session limit is reached...
+                System.out.println("Session size = 10");
+
                 forwardTo.accept("noSessions.jsp");
                 return;
             }
 
             //If the session limit has not been reached...
+            System.out.println("Session size != 10");
 
-            String[] newSession = {ip, this.dateFormat.format(new Date()), NO_NAME, getRandomString()};
+            String sessionString = getRandomString();
+            String[] newSession = {sessionString, this.dateFormat.format(new Date()), NO_NAME};
             this.sessions.add(newSession);
-            forwardTo.accept("startSession.jsp");
+            req.setAttribute("sessionString", sessionString);
+            req.setAttribute("sessionCount", this.sessions.size());
+            forwardTo.accept("getNotes.jsp");
             return;
         }
 
@@ -90,6 +118,7 @@ public class SessionServlet extends HttpServlet {
             System.out.println("Ending session.");
             this.sessions.remove(currentSession);
             req.getSession().invalidate();
+            req.setAttribute("sessionCount", this.sessions.size());
             forwardTo.accept("startSession.jsp");
             return;
         }
@@ -98,16 +127,6 @@ public class SessionServlet extends HttpServlet {
 
         String username = "";
         String password;
-        if (currentSession[NAME_INDEX].equals(NO_NAME)) { //If no name was set for this session...
-            username = req.getParameter("username");
-            password = req.getParameter("password");
-            if (username == null || username.trim().length() == 0 || checkPassword(username, password)) { //If the credentials are invalid...
-                this.sessions.remove(currentSession);
-                req.setAttribute("sessionCount", this.sessions.size());
-                forwardTo.accept("startSession.jsp");
-                return;
-            }
-        }
 
         //If the credentials are valid...
 
@@ -131,6 +150,7 @@ public class SessionServlet extends HttpServlet {
         }
         req.setAttribute("sessionCount", this.sessions.size());
         req.setAttribute("notes", notes);
+        req.setAttribute("sessionString", req.getParameter("sessionString"));
         forwardTo.accept("getNotes.jsp");
     }
 
