@@ -142,15 +142,20 @@ public class SessionServlet extends HttpServlet {
 
         currentSession[DATE_INDEX] = this.dateFormat.format(new Date());
         NotesBean notes = new NotesBean();
-        if (!req.getParameter("task").trim().equals("0")) { //If task does not equal 0 (getting notes)...
-            notes.setAll(req.getParameter("javaSource"), Integer.parseInt(req.getParameter("version")));
-            if (req.getParameter("task").trim().equals("2")) { //If task is 2 (editing notes)...
-                notes.setNotes(req.getParameter("notes"), req.getParameter("javaSource"), Integer.parseInt(req.getParameter("version")));
+
+        final Object lock = req.getSession().getId().intern();
+
+        synchronized (lock) {
+            if (!req.getParameter("task").trim().equals("0")) { //If task does not equal 0 (getting notes)...
+                notes.setAll(req.getParameter("javaSource"), Integer.parseInt(req.getParameter("version")));
+                if (req.getParameter("task").trim().equals("2")) { //If task is 2 (editing notes)...
+                    notes.setNotes(req.getParameter("notes"), req.getParameter("javaSource"), Integer.parseInt(req.getParameter("version")));
+                }
             }
+            req.setAttribute("sessionCount", this.sessions.size());
+            req.setAttribute("notes", notes);
+            req.setAttribute("sessionString", req.getParameter("sessionString"));
         }
-        req.setAttribute("sessionCount", this.sessions.size());
-        req.setAttribute("notes", notes);
-        req.setAttribute("sessionString", req.getParameter("sessionString"));
         forwardTo.accept("getNotes.jsp");
     }
 
