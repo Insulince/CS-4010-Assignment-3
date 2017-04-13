@@ -55,18 +55,20 @@ public class SessionServlet extends HttpServlet {
 
         if (usersString != null && !Objects.equals(usersString, "")) { //If the user provided a sessionString...
             int counter = 0;
-            for (String[] session : this.sessions) { //For each session...
-                if (session[SESSION_STRING_INDEX].equals(usersString)) { //If the current session's sessionString is the provided sessionString...
-                    isFirstVisit = false; //This user has been here before.
-                    currentSession = session; //This is the current session.
-                    break;
-                }
+            if (!Objects.equals(usersString, "no-session-string-yet")) {
+                for (String[] session : this.sessions) { //For each session...
+                    if (session[SESSION_STRING_INDEX].equals(usersString)) { //If the current session's sessionString is the provided sessionString...
+                        isFirstVisit = false; //This user has been here before.
+                        currentSession = session; //This is the current session.
+                        break;
+                    }
 
-                counter++; //This session doesn't match, so increment.
+                    counter++; //This session doesn't match, so increment.
 
-                if (counter == this.sessions.size()) { //If we checked every session without finding the matching one...
-                    forwardTo.accept("startSession.jsp"); //Something went wrong and this session is not recognized as valid. Send to login screen.
-                    return;
+                    if (counter == this.sessions.size()) { //If we checked every session without finding the matching one...
+                        forwardTo.accept("startSession.jsp"); //Something went wrong and this session is not recognized as valid. Send to login screen.
+                        return;
+                    }
                 }
             }
         }

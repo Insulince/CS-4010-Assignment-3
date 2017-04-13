@@ -14,8 +14,8 @@ public class NotesBean implements Serializable {
 
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost:3306/cs4010";
-    static final String USER = "justin";
-    static final String PASS = "cC8XBEha48hjn=";
+    static final String USER = "cs4010";
+    static final String PASS = "cs4010";
     private int javaStoreId = -1;
     private String fileName = "";
     private int versionId = 0;

@@ -8,7 +8,7 @@
     <h1>Please Log in </h1>
     <hr/>
     <font size="+3">
-        <form method="get" action="http://localhost:8080/js_test/sessionServlet">
+        <form method="get" action="http://hoare.cs.umsl.edu/servlet/j-reusnow/sessionServlet">
             Your name: <input type="text" name="username"><br>
             Your password: <input type="password" name="password"><br>
             <input type="hidden" name="sessionString" value="no-session-string-yet"/>
